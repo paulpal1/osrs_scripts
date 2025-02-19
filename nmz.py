@@ -54,6 +54,18 @@ def getOverloadPotionPT(gameWindow):
     return getMostConfidentFromList(gameWindow, OVERLOADS)
 
 def getMostConfidentFromList(gameWindow, templates, threshold=THRESHOLD) -> Coord:
+    """
+    Returns the most confident match given a list of templates
+    
+    Args:
+        gameWindow: The game window image
+        templates: A list of templates to search for
+        threshold: The confidence threshold to consider a match
+    
+    Returns:
+        Coord: The most confident match
+    """
+
     highestConfidence = 0.0
     bestCoord = None
     for template in templates:
@@ -70,11 +82,22 @@ def getMostConfidentFromList(gameWindow, templates, threshold=THRESHOLD) -> Coor
     return bestCoord
 
 def getMostConfidentMatch(gameWindow, template, threshold=THRESHOLD) -> Coord:
+    """
+    Returns the most confident match for a given template
+    
+    Args:
+        gameWindow: The game window image
+        template: The template to search for
+        threshold: The confidence threshold to consider a match
+    
+    Returns:
+        Coord: The most confident match
+    """
+
     # Perform template matching
     result = cv2.matchTemplate(gameWindow, template, cv2.TM_CCOEFF_NORMED)
     locations = np.where(result >= threshold)
 
-    # If no matches are found, return None
     if not locations[0].size:
         return None
     
@@ -119,8 +142,21 @@ def getPowerUpPT(gameWindow):
 
 def getRockCakePT(gameWindow):
     return getMostConfidentMatch(gameWindow, ROCKCAKE)
+
+def randomSleep():
+    min_duration = 0.1
+    max_duration = 0.5
+    random_duration = np.random.uniform(min_duration, max_duration)
+    time.sleep(random_duration)
+
+def move(coord: Coord):
+    """
+    Moves to a coordinate. Uses randomization to simulate human movement.
     
-def moveAndClick(coord: Coord):
+    Args:
+        coord: The coordinate to move to
+    """
+
     min_travel_duration = 0.1
     max_travel_duration = 1.0
     travel_random_duration = np.random.uniform(min_travel_duration, max_travel_duration)
@@ -140,28 +176,29 @@ def moveAndClick(coord: Coord):
 
     pyautogui.moveTo(x_random, y_random, duration=travel_random_duration)
     time.sleep(click_random_duration)
+
+def moveAndClick(coord: Coord):
+    """
+    Moves to a coordinate and clicks. Uses randomization to simulate human movement.
+    
+    Args:
+        coord: The coordinate to move to and click
+    """
+
+    move(coord)
+    randomSleep()
     pyautogui.click()
 
 def moveAndDoubleClick(coord: Coord):
-    min_travel_duration = 0.1
-    max_travel_duration = 1.0
-    travel_random_duration = np.random.uniform(min_travel_duration, max_travel_duration)
+    """
+    Moves to a coordinate and double clicks. Uses randomization to simulate human movement.
+    
+    Args:
+        coord: The coordinate to move to and double click
+    """
 
-    min_click_duration = 0.1
-    max_click_duration = 0.5
-    click_random_duration = np.random.uniform(min_click_duration, max_click_duration)
-
-    center_x = R_LEFT + coord.x
-    center_y = R_TOP + coord.y
-
-    width = (coord.width * 0.8) / 2
-    height = (coord.height * 0.8) / 2
-
-    x_random = center_x + np.random.uniform(-width, width)
-    y_random = center_y + np.random.uniform(-height, height)
-
-    pyautogui.moveTo(x_random, y_random, duration=travel_random_duration)
-    time.sleep(click_random_duration)
+    move(coord)
+    randomSleep()
     pyautogui.doubleClick()
 
 while True:
